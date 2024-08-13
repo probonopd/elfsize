@@ -18,23 +18,6 @@
 #include <stdint.h>
 #include <libgen.h>
 
-typedef struct {
-    uint32_t lo;
-    uint32_t hi;
-    uint32_t a;
-    uint32_t b;
-    uint32_t c;
-    uint32_t d;
-    uint8_t buffer[64];
-    uint32_t block[16];
-} Md5Context;
-
-#define MD5_HASH_SIZE (128 / 8)
-
-typedef struct {
-    uint8_t bytes[MD5_HASH_SIZE];
-} MD5_HASH;
-
 typedef uint16_t Elf32_Half;
 typedef uint16_t Elf64_Half;
 typedef uint32_t Elf32_Word;
