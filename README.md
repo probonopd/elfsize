@@ -22,4 +22,5 @@ echo "appendeddata" >> ./elfsize
 
 # Check whether we still get the correct ELF size
 ./elfsize ./elfsize
+# 17136
 ```
