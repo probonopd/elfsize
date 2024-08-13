@@ -210,7 +210,7 @@ static off_t read_elf64(FILE* fd) {
     return sht_end > last_section_end ? sht_end : last_section_end;
 }
 
-ssize_t appimage_get_elf_size(const char* fname) {
+ssize_t get_elf_size(const char* fname) {
     off_t ret;
     FILE* fd = NULL;
     off_t size = -1;
@@ -246,57 +246,6 @@ ssize_t appimage_get_elf_size(const char* fname) {
 }
 
 /* Return the offset, and the length of an ELF section with a given name in a given ELF file */
-bool appimage_get_elf_section_offset_and_length(const char* fname, const char* section_name, unsigned long* offset, unsigned long* length) {
-        uint8_t* data;
-        int i;
-        int fd = open(fname, O_RDONLY);
-        size_t map_size = (size_t) lseek(fd, 0, SEEK_END);
-
-        data = mmap(NULL, map_size, PROT_READ, MAP_SHARED, fd, 0);
-        close(fd);
-
-        // this trick works as both 32 and 64 bit ELF files start with the e_ident[EI_NINDENT] section
-        unsigned char class = data[EI_CLASS];
-
-        if (class == ELFCLASS32) {
-                Elf32_Ehdr* elf;
-                Elf32_Shdr* shdr;
-
-                elf = (Elf32_Ehdr*) data;
-                shdr = (Elf32_Shdr*) (data + ((Elf32_Ehdr*) elf)->e_shoff);
-
-                char* strTab = (char*) (data + shdr[elf->e_shstrndx].sh_offset);
-                for (i = 0; i < elf->e_shnum; i++) {
-                        if (strcmp(&strTab[shdr[i].sh_name], section_name) == 0) {
-                                *offset = shdr[i].sh_offset;
-                                *length = shdr[i].sh_size;
-                        }
-                }
-        } else if (class == ELFCLASS64) {
-                Elf64_Ehdr* elf;
-                Elf64_Shdr* shdr;
-
-                elf = (Elf64_Ehdr*) data;
-                shdr = (Elf64_Shdr*) (data + elf->e_shoff);
-
-                char* strTab = (char*) (data + shdr[elf->e_shstrndx].sh_offset);
-                for (i = 0; i < elf->e_shnum; i++) {
-                        if (strcmp(&strTab[shdr[i].sh_name], section_name) == 0) {
-                                *offset = shdr[i].sh_offset;
-                                *length = shdr[i].sh_size;
-                        }
-                }
-        } else {
-                fprintf(stderr, "Platforms other than 32-bit/64-bit are currently not supported!");
-                munmap(data, map_size);
-                return false;
-        }
-
-        munmap(data, map_size);
-        return true;
-}
-
-/* Return the offset, and the length of an ELF section with a given name in a given ELF file */
 char* read_file_offset_length(const char* fname, unsigned long offset, unsigned long length) {
     FILE* f;
     if ((f = fopen(fname, "r")) == NULL) {
@@ -320,7 +269,7 @@ int main(int argc, char* argv[]) {
     }
 
     const char* fname = argv[1];
-    ssize_t size = appimage_get_elf_size(fname);
+    ssize_t size = get_elf_size(fname);
 
     if (size == -1) {
         fprintf(stderr, "Error: unable to get ELF size for file '%s'\n", fname);
