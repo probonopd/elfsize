@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include <stddef.h>
 #include <stdbool.h>
 #include <limits.h>
@@ -346,7 +344,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    printf("ELF size: %lld\n", (long long)size);
+    printf("%lld\n", (long long)size);
 
     return 0;
 }
