@@ -1,6 +1,6 @@
 # elfsize
 
-Calculate the size of an ELF file on disk. This is useful, e.g., to find out at which offset the filesystem image of an AppImage starts.
+Calculate the size of an ELF file on disk, not using a library. This is useful, e.g., to find out at which offset the filesystem image of an AppImage starts.
 
 ## Building
 
@@ -24,3 +24,7 @@ echo "appendeddata" >> ./elfsize
 ./elfsize ./elfsize
 # 17136
 ```
+
+## Note
+
+There is a similar project that uses a library at https://github.com/probonopd/libelfsize
